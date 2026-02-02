@@ -3,15 +3,17 @@
 ![Verilog](https://img.shields.io/badge/Language-Verilog-blue) ![Python](https://img.shields.io/badge/Verification-Python-yellow) ![Vivado](https://img.shields.io/badge/Tool-Vivado%20202x.x-green) ![Board](https://img.shields.io/badge/Board-Basys3-orange)
 
 ## 📖 Project Overview
-This project implements a high-performance **AXI4-Full Direct Memory Access (DMA) Controller** targeting the **Basys3 FPGA** board.
+This project implements a high-performance **AXI4-Full Direct Memory Access (DMA) Controller** on the **Basys3 (Artix-7)** FPGA board.
 
-Since the Basys3 board lacks external DDR memory, we constructed a **"Virtual DDR System"** using on-chip **BRAM Controllers**. The designed IP complies with the standard AXI4-Full protocol (Burst Mode, Outstanding Transactions), making it fully portable to Zynq-based systems with DDR memory.
+Since the Basys3 board utilizes a pure FPGA fabric without a hardened PS (Processing System) or DDR memory, we architected a **MicroBlaze-based Soft SoC** system. We simulated the external memory environment using on-chip **BRAM Controllers** to verify the AXI4-Full Burst transactions.
+
+Although demonstrated on Basys3, this IP is designed to be fully compliant with the standard **AXI4-Full protocol**, ensuring portability to **Zynq SoC** or generic DDR-based systems in the future.
 
 ### 🎯 Key Objectives
-* **High Performance:** Implementation of AXI4-Full Burst Mode (Max 16 beats).
-* **Reliability:** Hardware constraints handling (4KB Boundary Check).
+* **High Performance:** Implementation of AXI4-Full Burst Mode (Max 16 beats) for high throughput.
+* **Reliability:** Handling hardware constraints such as 4KB Boundary Check.
 * **Verification:** Automated verification environment using **Python Golden Model**.
-* **System Integration:** Fully integrated with MicroBlaze Soft-Core Processor.
+* **System Integration:** SoC integration with **MicroBlaze Soft-Core Processor**.
 
 ---
 
@@ -20,23 +22,22 @@ Since the Basys3 board lacks external DDR memory, we constructed a **"Virtual DD
 | Feature | Specification | Note |
 | :--- | :--- | :--- |
 | **Protocol** | AXI4-Full Master | MM2S (Read) & S2MM (Write) |
-| **Data Width** | 32-bit | Compatible with MicroBlaze |
-| **Address Width** | 32-bit | 4GB Address Space |
-| **Burst Length** | Max 16 Beats | Optimized for BRAM Latency |
+| **Processor**| **MicroBlaze** | Soft-Core CPU (32-bit) |
+| **Data Width** | 32-bit | Optimized for MicroBlaze System |
+| **Address Width** | 32-bit | 4GB Address Space Support |
+| **Burst Length** | Max 16 Beats | Tuned for BRAM Latency |
 | **FIFO Depth** | 1024 Words | Async Clock Domain Crossing |
-| **Clock Freq** | 100 MHz | System Clock |
 
 ---
 
 ## 🏗️ System Architecture
 
-The DMA consists of a Control Slave (AXI4-Lite) for CPU configuration, two AXI4-Full Masters for data movement, and an asynchronous FIFO for data buffering.
+The system mimics a typical SoC structure using FPGA fabric logic. It includes a Control Slave for CPU configuration and two AXI4-Full Masters for data movement between memory spaces.
 
 ![Block Diagram](./docs/images/dma_block_diagram.png)
-*(Please upload your block diagram image to docs/images folder)*
 
-### Memory Map
-The system uses AXI BRAM Controllers to simulate source and destination memory spaces.
+### Memory Map (Virtual DDR)
+Since physical DDR is absent, we mapped AXI BRAM Controllers to specific address regions to act as Source/Destination memories.
 
 * **DMA Control Register:** `0x44A0_0000`
 * **Source Memory (BRAM 0):** `0xC000_0000` (Read-Only)
@@ -46,14 +47,14 @@ The system uses AXI BRAM Controllers to simulate source and destination memory s
 
 ## 👥 Team & Roles (R&R)
 
-This project was executed by a team of 4, simulating a Fabless design team structure.
+This project was executed by a team of 4, simulating a professional Fabless IP design team.
 
 | Role | Responsibility | Main Tech Stack |
 | :--- | :--- | :--- |
-| **Team Leader (Team 4)** | **Project Lead & Control Logic** <br> - AXI4-Lite Slave & FIFO Integration <br> - SW Driver (C) & Architecture Design | Verilog, C, Git |
-| **RTL Designer (Team 3)** | **Core IP Design (Datapath)** <br> - Read/Write Master FSM <br> - AXI4 Protocol Handling (Burst, 4KB) | Verilog, Waveform |
-| **Verification (Team 1)** | **Simulation & Modeling** <br> - Python Golden Model & Data Generator <br> - Automated Verification Scripts | Python, Pandas |
-| **System Eng (Team 2)** | **FPGA Implementation** <br> - Vivado Block Design & ILA Debugging <br> - Timing Analysis & Place/Route | Vivado, Tcl |
+| **Team Leader** | **Project Lead & Control Logic** <br> - AXI4-Lite Slave & FIFO Integration <br> - MicroBlaze Firmware (C) Development | Verilog, C, Git |
+| **RTL Designer** | **Core IP Design (Datapath)** <br> - Read/Write Master FSM Design <br> - AXI4 Protocol Handling (Burst, Handshake) | Verilog, Waveform |
+| **Verification** | **Simulation & Modeling** <br> - Python Golden Model & Data Generator <br> - Automated Verification Scripts | Python, Pandas |
+| **System Eng** | **FPGA Implementation** <br> - Vivado Block Design (MicroBlaze System) <br> - ILA Debugging & Timing Closure | Vivado, Tcl |
 
 ---
 
@@ -70,5 +71,7 @@ AXI4_DMA_Basys3_IP/
 ├── sim/                # Verification Environment
 │   ├── python/         # Golden Model Generator
 │   └── tb/             # Verilog Testbenches
-├── sw/                 # Embedded Software (Drivers)
+├── sw/                 # Embedded Software (Vitis/SDK)
+│   ├── dma_driver.c    # DMA Control Driver
+│   └── main.c          # Test Application
 └── vivado/             # Constraints (.xdc) & IP Repo
