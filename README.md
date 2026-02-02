@@ -62,16 +62,29 @@ This project was executed by a team of 4, simulating a professional Fabless IP d
 
 ```bash
 AXI4_DMA_Basys3_IP/
-├── docs/               # Specifications & Waveforms
-├── rtl/                # Synthesizable Verilog Source Codes
-│   ├── top_dma.v       # Top Module
-│   ├── read_master.v   # AXI4-Full Read Master
-│   ├── write_master.v  # AXI4-Full Write Master
-│   └── ...
-├── sim/                # Verification Environment
-│   ├── python/         # Golden Model Generator
-│   └── tb/             # Verilog Testbenches
-├── sw/                 # Embedded Software (Vitis/SDK)
-│   ├── dma_driver.c    # DMA Control Driver
-│   └── main.c          # Test Application
-└── vivado/             # Constraints (.xdc) & IP Repo
+├── .gitignore          # [필수] Vivado 임시 파일 제외 설정
+├── README.md           # 프로젝트 개요, 규격서, 팀원 R&R 명시
+├── docs/               # 규격서, 아키텍처 다이어그램, 파형 캡처 저장
+│
+├── rtl/                # [Team 3 & Team 4] Verilog 소스 코드 (Core)
+│   ├── top_dma.v       # 최상위 모듈
+│   ├── read_master.v
+│   ├── write_master.v
+│   ├── control_slave.v
+│   └── fifo_async.v
+│
+├── sim/                # [Team 1] 검증 및 시뮬레이션
+│   ├── python/         # Golden Model, Data Gen 스크립트
+│   │   ├── gen_data.py
+│   │   └── check_result.py
+│   ├── tb/             # Verilog Testbench
+│   └── logs/           # 시뮬레이션 결과 텍스트 파일 (.gitignore 추천)
+│
+├── sw/                 # [팀원 4] 임베디드 SW
+│   ├── drivers/        # DMA 드라이버 (dma_driver.c/h)
+│   └── app/            # 메인 애플리케이션 (main.c)
+│
+└── vivado/             # [Team 2] 시스템 프로젝트
+    ├── constraints/    # .xdc 파일 (Pin map)
+    ├── ip_repo/        # 패키징된 IP 저장소
+    └── scripts/        # 프로젝트 생성용 Tcl 스크립트 (권장)
