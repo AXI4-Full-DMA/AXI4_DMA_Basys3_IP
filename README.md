@@ -80,7 +80,7 @@ AXI4_DMA_Basys3_IP/
 │   ├── tb/             # Verilog Testbench
 │   └── logs/           # 시뮬레이션 결과 텍스트 파일 (.gitignore 추천)
 │
-├── sw/                 # [팀원 4] 임베디드 SW
+├── sw/                 # [Team 4] 임베디드 SW
 │   ├── drivers/        # DMA 드라이버 (dma_driver.c/h)
 │   └── app/            # 메인 애플리케이션 (main.c)
 │
