@@ -1,0 +1,12 @@
+# Vivado Ignored Files
+*.jou
+*.log
+*.pb
+*.dcp
+*.bit
+*.bin
+*.xpr      # .xpr도 가급적 제외하고 Tcl로 관리하는 게 좋으나, 어렵다면 포함.
+/vivado/*.cache/
+/vivado/*.hw/
+/vivado/*.runs/
+/vivado/*.sim/
