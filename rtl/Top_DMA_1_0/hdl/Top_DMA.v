@@ -168,7 +168,9 @@
 		input wire  m01_axi_rlast,
 		input wire [C_M01_AXI_RUSER_WIDTH-1 : 0] m01_axi_ruser,
 		input wire  m01_axi_rvalid,
-		output wire  m01_axi_rready
+		output wire  m01_axi_rready,
+		
+		input wire i_btn_start // 버튼 연결용 핀
 	);
 	
 // Add user logic here
@@ -179,7 +181,10 @@
     wire [31:0] src_addr_w;
     wire [31:0] dst_addr_w;
     wire [31:0] trf_len_w;
-    wire        dma_start_w;
+//  wire        dma_start_w;
+    wire sw_start_w;  // 소프트웨어(AXI)에서 나오는 시작 신호
+    wire real_start;  // 실제 동작 신호
+    
     wire        dma_done_w;
     wire        rd_done_w;    // Read Master 완료 신호용 추가
     wire        wr_done_w;    // Write Master 완료 신호용 추가
@@ -202,10 +207,10 @@
         .o_src_addr  (src_addr_w),
         .o_dst_addr  (dst_addr_w),
         .o_trf_len   (trf_len_w),
-        .o_dma_start (dma_start_w),
+        .o_dma_start (sw_start_w),
         .i_dma_done  (dma_done_w),   // 최종 완료 신호 연결
         
-        // AXI 표준 포트 연결 (질문자님 코드와 동일)
+        // AXI 표준 포트 연결 
         .S_AXI_ACLK   (s00_axi_aclk),
         .S_AXI_ARESETN(s00_axi_aresetn),
         .S_AXI_AWADDR (s00_axi_awaddr),
@@ -228,7 +233,7 @@
         .S_AXI_AWPROT (s00_axi_awprot),
         .S_AXI_ARPROT (s00_axi_arprot)
     );
-
+    
     // =========================================================================
     // [Step 3] Read Master 인스턴스 (M00: Memory -> FIFO)
     // =========================================================================
@@ -238,7 +243,7 @@
         .C_M_AXI_DATA_WIDTH(C_M00_AXI_DATA_WIDTH)
     ) Read_Master_inst (
         // 유저 인터페이스 연결
-        .i_start      (dma_start_w),
+        .i_start      (real_start),
         .i_src_addr   (src_addr_w),
         .i_total_len  (trf_len_w),
         .o_fifo_push  (fifo_wr_en),
@@ -274,7 +279,7 @@
         .C_M_AXI_DATA_WIDTH(C_M01_AXI_DATA_WIDTH)
     ) Write_Master_inst (
         // 유저 인터페이스 연결
-        .i_start      (dma_start_w),
+        .i_start      (real_start),
         .i_dst_addr   (dst_addr_w),
         .i_total_len  (trf_len_w),
         .i_w_data     (fifo_dout),
@@ -330,6 +335,8 @@
         .empty(fifo_empty)
     );
     
+    assign real_start = sw_start_w | i_btn_start;
+   
     // [중요] 내부 완료 신호와 외부 완료 포트를 연결합니다.
     assign dma_done_w       = wr_done_w; // 쓰기까지 끝나야 전체 DMA 완료
     assign m00_axi_txn_done = rd_done_w; // Read 채널 완료 상태 출력
