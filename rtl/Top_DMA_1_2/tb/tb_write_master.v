@@ -106,7 +106,7 @@ module tb_write_master();
             aw_delay <= 0;
         end else begin
             if(m_axi_awvalid && !m_axi_awready) begin
-                if(aw_delay < 2) aw_delay <= aw_delay + 1;
+                if(aw_delay < 0) aw_delay <= aw_delay + 1;
                 else begin
                     m_axi_awready <= 1;
                     aw_delay <= 0;
@@ -139,7 +139,7 @@ module tb_write_master();
             end
             
             if(b_pending && !m_axi_bvalid) begin
-                if(b_delay < 4) b_delay <= b_delay + 1; 
+                if(b_delay < 0) b_delay <= b_delay + 1; 
                 else begin
                     m_axi_bvalid <= 1;
                     b_pending <= 0;
