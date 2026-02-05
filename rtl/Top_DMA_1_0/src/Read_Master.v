@@ -160,8 +160,8 @@ module Read_Master # (
 
             case (current_state)
                 IDLE: begin
-                    o_read_done <= 0;
                     if (i_start) begin
+                        o_read_done <= 0;
                         r_current_addr    <= i_src_addr;
                         r_remaining_bytes <= i_total_len;
                     end
@@ -188,5 +188,4 @@ module Read_Master # (
             endcase
         end
     end
-
 endmodule
