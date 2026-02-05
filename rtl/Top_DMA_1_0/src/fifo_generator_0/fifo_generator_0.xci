@@ -5,7 +5,7 @@
     "cell_name": "FIFO_inst",
     "component_reference": "xilinx.com:ip:fifo_generator:13.2",
     "ip_revision": "11",
-    "gen_directory": "../../../../../MYIP/MYIP.tmp/Top_DMA_v1_0_project/Top_DMA_v1_0_project.gen/sources_1/ip/fifo_generator_0",
+    "gen_directory": "../../../../../project_1/project_1.tmp/Top_DMA_v1_0_project/Top_DMA_v1_0_project.gen/sources_1/ip/fifo_generator_0",
     "parameters": {
       "component_parameters": {
         "Component_Name": [ { "value": "fifo_generator_0", "resolve_type": "user", "usage": "all" } ],
@@ -398,7 +398,7 @@
         "IPCONTEXT": [ { "value": "IP_Flow" } ],
         "IPREVISION": [ { "value": "11" } ],
         "MANAGED": [ { "value": "TRUE" } ],
-        "OUTPUTDIR": [ { "value": "../../../../../MYIP/MYIP.tmp/Top_DMA_v1_0_project/Top_DMA_v1_0_project.gen/sources_1/ip/fifo_generator_0" } ],
+        "OUTPUTDIR": [ { "value": "../../../../../project_1/project_1.tmp/Top_DMA_v1_0_project/Top_DMA_v1_0_project.gen/sources_1/ip/fifo_generator_0" } ],
         "SELECTEDSIMMODEL": [ { "value": "" } ],
         "SHAREDDIR": [ { "value": "." } ],
         "SWVERSION": [ { "value": "2024.2" } ],

@@ -112,10 +112,10 @@ module Write_Master # (
             B_PHASE: begin
                 // Slave로부터 쓰기 완료 응답(BVALID)을 받으면 판단
                 if (m_axi_bvalid && m_axi_bready) begin
-                    if (r_remaining_bytes > current_transfer_bytes) // 이 부분 조건 <= 수정
-                        next_state = AW_PHASE; // idle 
+                    if (r_remaining_bytes <= current_transfer_bytes) // 이 부분 조건 <= 수정
+                        next_state = IDLE; // idle 
                     else
-                        next_state = IDLE;     // aw_phase
+                        next_state = AW_PHASE;     // aw_phase
                 end
             end
             default: next_state = IDLE;
@@ -166,8 +166,8 @@ module Write_Master # (
             case (current_state)
                 IDLE: begin
                     w_beat_count <= 0;
-                    o_write_done <= 0;
                     if (i_start) begin
+                        o_write_done <= 0;
                         r_current_addr    <= i_dst_addr;
                         r_remaining_bytes <= i_total_len;
                     end
