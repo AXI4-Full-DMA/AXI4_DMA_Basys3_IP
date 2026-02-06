@@ -4,39 +4,39 @@ module Write_Master # (
     parameter integer C_M_AXI_ADDR_WIDTH = 32,
     parameter integer C_M_AXI_DATA_WIDTH = 32
 )(
-    input wire clk,
-    input wire reset_n,
+    input wire clk,         // 시스템 클럭
+    input wire reset_n,     // 리셋 신호
 
     // Control Signals
-    input wire i_start,
-    input wire [31:0] i_dst_addr,
-    input wire [31:0] i_total_len,
-    output reg o_write_done,
+    input wire i_start,             // [시작 트리거] 1이 들어오면 동작 시작
+    input wire [31:0] i_dst_addr,   // [목적지 주소] 데이터를 쓸 메모리의 시작 주소 
+    input wire [31:0] i_total_len,  // [전체 길이] 전송할 데이터의 총 바이트 수
+    output reg o_write_done,        // [완료 신호] 모든 데이터를 다 썼을 때 1로 띄워 알림
 
     // FIFO Interface
-    input wire i_fifo_empty,
-    output wire o_fifo_rd_en,
-    input wire [31:0] i_w_data,
+    input wire i_fifo_empty,        // [상태 신호] FIFO가 비어있음
+    output wire o_fifo_rd_en,       // [읽기 요청] FIFO에서 데이터를 하나 꺼내달라는 신호
+    input wire [31:0] i_w_data,     // [데이터 입력] FIFO에서 실제 꺼내진 데이터
 
     // AXI4-Full Master (AW Channel)
-    output wire [C_M_AXI_ADDR_WIDTH-1 : 0] m_axi_awaddr,
-    output wire [7 : 0] m_axi_awlen,
-    output wire [2 : 0] m_axi_awsize,
-    output wire [1 : 0] m_axi_awburst,
-    output wire m_axi_awvalid,
-    input  wire m_axi_awready,
-
+    output wire [C_M_AXI_ADDR_WIDTH-1 : 0] m_axi_awaddr,    // [쓰기 주소] 데이터를 쓸 타겟 주소
+    output wire [7 : 0] m_axi_awlen,                        // [버스트 길이] 한 번에 몇 개를 보낼지 (실제 개수 - 1)
+    output wire [2 : 0] m_axi_awsize,                       // [버스트 크기] 데이터 한 칸의 크기 (4Byte/32bit)
+    output wire [1 : 0] m_axi_awburst,                      // [버스트 타입] 주소 증가 방식 (주소 4씩 증가)
+    output wire m_axi_awvalid,          // [유효 신호] 주소 정보를 보냄
+    input  wire m_axi_awready,          // [준비 완료] 주소 받을 준비 상태
+    
     // AXI4-Full Master (W Channel)
-    output wire [C_M_AXI_DATA_WIDTH-1 : 0] m_axi_wdata,
-    output wire [C_M_AXI_DATA_WIDTH/8-1 : 0] m_axi_wstrb,
-    output wire m_axi_wlast,
-    output wire m_axi_wvalid,
-    input  wire m_axi_wready,
+    output wire [C_M_AXI_DATA_WIDTH-1 : 0] m_axi_wdata,     // [쓰기 데이터] 메모리에 쓸 실제 데이터
+    output wire [C_M_AXI_DATA_WIDTH/8-1 : 0] m_axi_wstrb,   // [바이트 활성화] 어떤 바이트가 유효한지 표시
+    output wire m_axi_wlast,        // [마지막 표시] 버스트의 마지막 데이터
+    output wire m_axi_wvalid,       // [유효 신호] 데이터를 보냄
+    input  wire m_axi_wready,       // [준비 완료] 데이터 받을 준비 완료
 
     // AXI4-Full Master (B Channel)
-    input  wire [1 : 0] m_axi_bresp,
-    input  wire m_axi_bvalid,
-    output wire m_axi_bready
+    input  wire [1 : 0] m_axi_bresp,    // [응답 상태] 처리 결과
+    input  wire m_axi_bvalid,           // [유효 신호] 결과에 대한 응답
+    output wire m_axi_bready            // [준비 완료] 응답 받을 준비 완료
 );
 
     // FSM States
@@ -112,7 +112,7 @@ module Write_Master # (
             B_PHASE: begin
                 // Slave로부터 쓰기 완료 응답(BVALID)을 받으면 판단
                 if (m_axi_bvalid && m_axi_bready) begin
-                    if (r_remaining_bytes == 0)
+                    if (r_remaining_bytes <= current_transfer_bytes)
                         next_state = IDLE;
                     else
                         next_state = AW_PHASE;
@@ -140,8 +140,10 @@ module Write_Master # (
                 end
                 B_PHASE: begin
                     // 응답을 받는 시점에 남은 데이터가 있다면 미리 AWVALID를 띄움
-                    if (m_axi_bvalid && m_axi_bready && r_remaining_bytes > 0)
-                        awvalid_reg <= 1;
+                    if (m_axi_bvalid && m_axi_bready) begin
+                        if(r_remaining_bytes > current_transfer_bytes) awvalid_reg <= 1;
+                        else awvalid_reg <= 0;
+                    end
                 end
                 default: awvalid_reg <= 0;
             endcase
@@ -163,6 +165,7 @@ module Write_Master # (
             current_state <= next_state;
             case (current_state)
                 IDLE: begin
+                    w_beat_count <= 0;
                     o_write_done <= 0;
                     if (i_start) begin
                         r_current_addr    <= i_dst_addr;
@@ -173,7 +176,6 @@ module Write_Master # (
                 AW_PHASE: begin
                     if (m_axi_awvalid && m_axi_awready) begin
                         r_burst_len  <= calc_len_bytes[9:2];
-                        w_beat_count <= 0;
                     end
                 end
 
