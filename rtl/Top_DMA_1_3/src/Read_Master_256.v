@@ -1,6 +1,7 @@
 `timescale 1ns / 1ps
 
 module Read_Master # (
+    parameter integer C_M_AXI_ID_WIDTH   = 1,
     parameter integer C_M_AXI_ADDR_WIDTH = 32,
     parameter integer C_M_AXI_DATA_WIDTH = 32
 )(
@@ -38,7 +39,8 @@ module Read_Master # (
     localparam ADDR_PHASE = 3'b010;
     localparam DATA_PHASE = 3'b100;
 
-    reg [2:0] current_state, next_state;
+    reg [2:0] current_state;
+    reg [2:0] next_state;
 
     // Registers
     reg [31:0] r_current_addr;
@@ -58,7 +60,7 @@ module Read_Master # (
     // -------------------------------------------------------------------------
     assign next_boundary_addr = (r_current_addr & 32'hFFFF_F000) + 32'h1000;
     assign dist_to_boundary   = next_boundary_addr - r_current_addr;
-    assign max_burst_bytes    = (r_remaining_bytes > 64) ? 64 : r_remaining_bytes;
+    assign max_burst_bytes    = (r_remaining_bytes > 256) ? 256 : r_remaining_bytes;
     assign calc_len_bytes     = (max_burst_bytes > dist_to_boundary) ? dist_to_boundary : max_burst_bytes;
     
     assign current_transfer_bytes = {22'd0, r_burst_len, 2'b00}; // r_burst_len * 4
@@ -159,8 +161,8 @@ module Read_Master # (
 
             case (current_state)
                 IDLE: begin
-                    o_read_done <= 0;
                     if (i_start) begin
+                        o_read_done <= 0;
                         r_current_addr    <= i_src_addr;
                         r_remaining_bytes <= i_total_len;
                     end
@@ -187,5 +189,4 @@ module Read_Master # (
             endcase
         end
     end
-
 endmodule
