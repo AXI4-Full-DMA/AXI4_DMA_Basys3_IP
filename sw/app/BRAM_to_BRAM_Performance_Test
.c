@@ -6,7 +6,7 @@
 #include "xil_types.h"
 
 // =========================================================================
-// [1] 하드웨어 주소 및 파라미터 설정
+// 하드웨어 주소 및 파라미터 설정
 // =========================================================================
 // Vivado의 Address Editor에서 확인한 실제 주소값으로 수정하세요.
 #define DMA_CTRL_BASE_ADDR   XPAR_TOP_DMA_0_BASEADDR
@@ -37,33 +37,36 @@ int main() {
     u32 *src_ptr = (u32 *)BRAM_READ_ADDR;
     u32 *dst_ptr = (u32 *)BRAM_WRITE_ADDR;
 
-    // 1. 타이머 초기화
+    // 타이머 초기화
     XTmrCtr_Initialize(&TimerCounter, TIMER_DEVICE_ID);
     XTmrCtr_SetOptions(&TimerCounter, 0, XTC_AUTO_RELOAD_OPTION);
 
     printf("\r\n--- Basys3 DMA Full Integrated Test ---\r\n");
 
-    // 2. 데이터 초기화 (Source 패턴 입력 및 Destination 클리어)
+    // 데이터 초기화 (Source 패턴 입력 및 Destination 클리어)
     printf("Step 1: Initializing BRAMs...\r\n");
     for(int i = 0; i < (TEST_DATA_LEN/4); i++) {
         src_ptr[i] = 0x55AA0000 + i;
         dst_ptr[i] = 0x00000000;
     }
 
-    // 3. DMA 레지스터 설정
+    // DMA 레지스터 설정
     printf("Step 2: Configuring DMA Registers...\r\n");
     Xil_Out32(DMA_CTRL_BASE_ADDR + REG_SRC_ADDR, BRAM_READ_ADDR);
     Xil_Out32(DMA_CTRL_BASE_ADDR + REG_DST_ADDR, BRAM_WRITE_ADDR);
     Xil_Out32(DMA_CTRL_BASE_ADDR + REG_TRF_LEN,  TEST_DATA_LEN);
 
-    // 4. 측정 시작 및 DMA 트리거
+    // 측정 시작 및 DMA 트리거
     printf("Step 3: DMA Start & Timing...\r\n");
     XTmrCtr_Start(&TimerCounter, 0);
     start_tick = XTmrCtr_GetValue(&TimerCounter, 0);
 
     Xil_Out32(DMA_CTRL_BASE_ADDR + REG_CTRL_START, 0x01); // Trigger!
 
-    // 5. 완료 대기 (Polling)
+    // 이 줄이 없으면 두 번째 실행부터 124 Ticks가 나올 수 있음
+    while( (Xil_In32(DMA_CTRL_BASE_ADDR + REG_STAT_DONE) & 0x01) == 1 );
+
+    // 완료 대기 (Polling)
     // 데이터가 목적지에 완벽하게 안착했음: slv_reg1[0]에 1 적힘
     while(!(Xil_In32(DMA_CTRL_BASE_ADDR + REG_STAT_DONE) & 0x01));
 
@@ -71,7 +74,7 @@ int main() {
     XTmrCtr_Stop(&TimerCounter, 0);
     printf("Step 4: Hardware Done Received!\r\n");
 
-    // 6. 데이터 정합성 검증
+    // 데이터 정합성 검증
     printf("Step 5: Verifying Data Integrity...\r\n");
     for(int i = 0; i < (TEST_DATA_LEN/4); i++) {
         if(src_ptr[i] != dst_ptr[i]) {
@@ -83,7 +86,7 @@ int main() {
         }
     }
 
-    // 7. 최종 결과 및 성능 계산
+    // 최종 결과 및 성능 계산
     if(error_cnt == 0) {
         printf(">>> SUCCESS: Data matched perfectly!\r\n");
 
