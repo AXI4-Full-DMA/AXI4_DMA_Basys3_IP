@@ -2,6 +2,7 @@
   "schema": "xilinx.com:schema:json_instance:1.0",
   "ip_inst": {
     "xci_name": "fifo_generator_0",
+    "cell_name": "FIFO_inst",
     "component_reference": "xilinx.com:ip:fifo_generator:13.2",
     "ip_revision": "11",
 <<<<<<< HEAD
