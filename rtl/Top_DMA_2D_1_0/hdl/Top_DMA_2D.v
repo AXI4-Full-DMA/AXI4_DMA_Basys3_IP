@@ -276,7 +276,7 @@ module Top_DMA_2D #
         .o_write_done (wr_done_w),
         .i_img_width  (img_width_w),
         .i_img_height (img_height_w),
-        .i_img_stride (img_stride_w),
+        .i_img_stride (img_width_w),
 
         .M_AXI_ACLK    (m01_axi_aclk),
         .M_AXI_ARESETN (m01_axi_aresetn),
