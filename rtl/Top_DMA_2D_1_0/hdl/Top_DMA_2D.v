@@ -274,6 +274,9 @@ module Top_DMA_2D #
         .i_fifo_empty (fifo_empty),
         .o_fifo_rd_en (fifo_rd_en),
         .o_write_done (wr_done_w),
+        .i_img_width  (img_width_w),
+        .i_img_height (img_height_w),
+        .i_img_stride (img_stride_w),
 
         .M_AXI_ACLK    (m01_axi_aclk),
         .M_AXI_ARESETN (m01_axi_aresetn),
