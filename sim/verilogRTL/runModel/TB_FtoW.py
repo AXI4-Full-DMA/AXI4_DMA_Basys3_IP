@@ -2,8 +2,8 @@
 파일명: TB_FtoW.py
 목적: FIFO -> Write Master -> Memory 쓰기 검증 (Address Logic 수정)
 """
-from writeMasterVerilog import WriteMaster
-from FIFO import FIFO
+from sim.verilogRTL.translateModel.writeMasterVerilog import WriteMaster
+from sim.verilogRTL.translateModel.FIFO import FIFO
 
 def run_write_test():
     print("\n" + "="*60)

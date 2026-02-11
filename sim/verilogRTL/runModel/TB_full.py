@@ -3,9 +3,9 @@
 목적: Read Master + FIFO + Write Master 통합 검증
 수정: 로그에 데이터 값(Hex)을 함께 출력하도록 변경
 """
-from readMasterVerilog import ReadMaster
-from writeMasterVerilog import WriteMaster
-from FIFO import FIFO
+from sim.verilogRTL.translateModel.readMasterVerilog import ReadMaster
+from sim.verilogRTL.translateModel.writeMasterVerilog import WriteMaster
+from sim.verilogRTL.translateModel.FIFO import FIFO
 
 class Mock_Memory:
     """

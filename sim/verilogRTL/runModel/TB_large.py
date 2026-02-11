@@ -2,10 +2,9 @@
 파일명: TB_Large_Transfer.py
 목적: 64KB 대용량 데이터 전송 시뮬레이션 (Golden Model 검증)
 """
-from readMasterVerilog import ReadMaster
-from writeMasterVerilog import WriteMaster
-from FIFO import FIFO
-import sys
+from sim.verilogRTL.translateModel.readMasterVerilog import ReadMaster
+from sim.verilogRTL.translateModel.writeMasterVerilog import WriteMaster
+from sim.verilogRTL.translateModel.FIFO import FIFO
 
 
 class Mock_Memory:

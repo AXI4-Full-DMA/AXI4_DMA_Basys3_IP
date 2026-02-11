@@ -2,8 +2,8 @@
 파일명: TB_RtoF.py
 목적: Read Master -> FIFO 데이터 흐름 검증 (Fix: ARLEN 전달 오류 수정)
 """
-from readMasterVerilog import ReadMaster
-from FIFO import FIFO
+from sim.verilogRTL.translateModel.readMasterVerilog import ReadMaster
+from sim.verilogRTL.translateModel.FIFO import FIFO
 
 class Mock_Read_Slave:
     def __init__(self, data_map):

@@ -2,7 +2,7 @@
 파일명: TB_Final_System.py
 설명: TOP_DMA 클래스를 직접 인스턴스화하여 검증하는 '진짜' 통합 테스트
 """
-from TOP_DMA import TopDMA  # ★ 이제 진짜 TopDMA를 불러옵니다!
+from sim.verilogRTL.translateModel.TOP_DMA import TopDMA  # ★ 이제 진짜 TopDMA를 불러옵니다!
 
 
 # --- 메모리 모델 (Slave 역할) ---
