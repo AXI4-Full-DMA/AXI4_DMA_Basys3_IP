@@ -66,7 +66,7 @@ module Write_Master # (
     // -------------------------------------------------------------------------
     assign next_boundary_addr = (r_current_addr & 32'hFFFF_F000) + 32'h1000;
     assign dist_to_boundary   = next_boundary_addr - r_current_addr;
-    assign max_burst_bytes    = (r_remaining_bytes > 256) ? 256 : r_remaining_bytes;
+    assign max_burst_bytes    = (r_remaining_bytes > 64) ? 64 : r_remaining_bytes;
     assign calc_len_bytes     = (max_burst_bytes > dist_to_boundary) ? dist_to_boundary : max_burst_bytes;
     assign current_transfer_bytes = {22'd0, r_burst_len, 2'b00}; 
 

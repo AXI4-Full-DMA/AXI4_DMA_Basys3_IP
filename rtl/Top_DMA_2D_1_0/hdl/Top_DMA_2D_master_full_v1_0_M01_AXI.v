@@ -3,7 +3,7 @@
 
 module Top_DMA_2D_master_full_v1_0_M01_AXI #
 (
-    parameter integer C_M_AXI_BURST_LEN     = 16,
+    parameter integer C_M_AXI_BURST_LEN     = 64,
     parameter integer C_M_AXI_ID_WIDTH      = 1,
     parameter integer C_M_AXI_ADDR_WIDTH    = 32,
     parameter integer C_M_AXI_DATA_WIDTH    = 32,
@@ -68,9 +68,11 @@ module Top_DMA_2D_master_full_v1_0_M01_AXI #
     // =========================================================================
     // [핵심 로직] Write_Master 코어 인스턴스화 (2D 매핑)
     // =========================================================================
+    (* dont_touch = "true" *)
     Write_Master # (
         .C_M_AXI_ADDR_WIDTH (C_M_AXI_ADDR_WIDTH),
-        .C_M_AXI_DATA_WIDTH (C_M_AXI_DATA_WIDTH)
+        .C_M_AXI_DATA_WIDTH (C_M_AXI_DATA_WIDTH),
+        .C_M_AXI_BURST_LEN  (C_M_AXI_BURST_LEN)
     ) u_write_master_core (
         .clk             (M_AXI_ACLK),      
         .reset_n         (M_AXI_ARESETN),

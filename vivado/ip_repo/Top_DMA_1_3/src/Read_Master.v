@@ -55,7 +55,7 @@ module Read_Master # (
     // --- 계산용 와이어 (Burst Size & Boundary Check) ---
     wire [31:0] next_boundary_addr;    // 다음 4KB 경계 주소
     wire [31:0] dist_to_boundary;      // 현재 주소에서 경계까지 남은 거리
-    wire [31:0] max_burst_bytes;       // 잔여 데이터와 최대 버스트(256B) 중 최소값
+    wire [31:0] max_burst_bytes;       // 잔여 데이터와 최대 버스트(64B) 중 최소값
     wire [31:0] calc_len_bytes;        // 경계 제약을 고려한 최종 버스트 바이트 크기
     wire [31:0] current_transfer_bytes;// 이번 버스트로 전송된 총 바이트 수
 
@@ -66,8 +66,8 @@ module Read_Master # (
     assign next_boundary_addr = (r_current_addr & 32'hFFFF_F000) + 32'h1000;
     assign dist_to_boundary   = next_boundary_addr - r_current_addr;
     
-    // 버스트 크기 결정: 한 번의 버스트는 최대 256바이트 제한
-    assign max_burst_bytes    = (r_remaining_bytes > 256) ? 256 : r_remaining_bytes;
+    // 버스트 크기 결정: 한 번의 버스트는 최대 64바이트 제한
+    assign max_burst_bytes    = (r_remaining_bytes > 64) ? 64 : r_remaining_bytes;
     
     // 경계 침범 방지: 경계까지 남은 거리와 계획된 버스트 크기 중 작은 쪽 선택
     assign calc_len_bytes     = (max_burst_bytes > dist_to_boundary) ? dist_to_boundary : max_burst_bytes;
@@ -175,7 +175,7 @@ module Read_Master # (
             case (current_state)
                 IDLE: begin
                     if (i_start) begin
-                        o_read_done <= 0;
+                            o_read_done <= 0;
                         r_current_addr    <= i_src_addr;   // 초기 주소 로드
                         r_remaining_bytes <= i_total_len;  // 전체 길이 로드
                     end

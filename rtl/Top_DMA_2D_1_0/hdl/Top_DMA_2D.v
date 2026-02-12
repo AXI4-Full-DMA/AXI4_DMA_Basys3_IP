@@ -16,7 +16,7 @@ module Top_DMA_2D #
     parameter integer C_S00_AXI_ADDR_WIDTH	= 5,
 
     parameter  C_M00_AXI_TARGET_SLAVE_BASE_ADDR	= 32'h40000000,
-    parameter integer C_M00_AXI_BURST_LEN	= 16,
+    parameter integer C_M00_AXI_BURST_LEN	= 64,
     parameter integer C_M00_AXI_ID_WIDTH	= 1,
     parameter integer C_M00_AXI_ADDR_WIDTH	= 32,
     parameter integer C_M00_AXI_DATA_WIDTH	= 32,
@@ -27,7 +27,7 @@ module Top_DMA_2D #
     parameter integer C_M00_AXI_BUSER_WIDTH	= 0,
 
     parameter  C_M01_AXI_TARGET_SLAVE_BASE_ADDR	= 32'h40000000,
-    parameter integer C_M01_AXI_BURST_LEN	= 16,
+    parameter integer C_M01_AXI_BURST_LEN	= 64,
     parameter integer C_M01_AXI_ID_WIDTH	= 1,
     parameter integer C_M01_AXI_ADDR_WIDTH	= 32,
     parameter integer C_M01_AXI_DATA_WIDTH	= 32,
@@ -263,6 +263,7 @@ module Top_DMA_2D #
 // [Step 4] Write Master 인스턴스 (M01: FIFO -> Memory)
 // -------------------------------------------------------------------------
     // FIFO 출구에서 데이터를 꺼내 타겟 메모리에 기록하는 모듈
+    
     Top_DMA_2D_master_full_v1_0_M01_AXI # (
         .C_M_AXI_BURST_LEN(C_M01_AXI_BURST_LEN),
         .C_M_AXI_ADDR_WIDTH(C_M01_AXI_ADDR_WIDTH),
@@ -274,6 +275,9 @@ module Top_DMA_2D #
         .i_fifo_empty (fifo_empty),
         .o_fifo_rd_en (fifo_rd_en),
         .o_write_done (wr_done_w),
+        .i_img_width (img_width_w), 
+        .i_img_height(img_height_w),
+        .i_img_stride(img_width_w),  
 
         .M_AXI_ACLK    (m01_axi_aclk),
         .M_AXI_ARESETN (m01_axi_aresetn),

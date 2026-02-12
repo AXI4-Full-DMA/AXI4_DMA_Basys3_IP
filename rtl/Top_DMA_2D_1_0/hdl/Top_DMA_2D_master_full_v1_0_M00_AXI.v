@@ -11,7 +11,7 @@
 module Top_DMA_2D_master_full_v1_0_M00_AXI #
 (
     // --- [1] 파라미터 영역 (AXI 규격 설정) ---
-    parameter integer C_M_AXI_BURST_LEN	= 16,     // 기본 버스트 길이
+    parameter integer C_M_AXI_BURST_LEN	= 256,     // 기본 버스트 길이
     parameter integer C_M_AXI_ID_WIDTH	= 1,      // AXI ID 폭
     parameter integer C_M_AXI_ADDR_WIDTH	= 32, // 주소 버스 폭
     parameter integer C_M_AXI_DATA_WIDTH	= 32, // 데이터 버스 폭
@@ -75,10 +75,11 @@ module Top_DMA_2D_master_full_v1_0_M00_AXI #
     // [핵심 로직] Read_Master 코어 인스턴스화
     // =========================================================================
     // 상위 래퍼의 포트들을 실제 동작을 담당하는 u_read_master_core에 매핑함
-    
+    (* dont_touch = "true" *)
     Read_Master # (
         .C_M_AXI_ADDR_WIDTH(C_M_AXI_ADDR_WIDTH),
-        .C_M_AXI_DATA_WIDTH(C_M_AXI_DATA_WIDTH)
+        .C_M_AXI_DATA_WIDTH(C_M_AXI_DATA_WIDTH),
+        .C_M_AXI_BURST_LEN(C_M_AXI_BURST_LEN)
     ) u_read_master_core (
         .clk             (M_AXI_ACLK),    
         .reset_n         (M_AXI_ARESETN),

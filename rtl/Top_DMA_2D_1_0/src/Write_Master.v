@@ -2,7 +2,8 @@
 
 module Write_Master # (
     parameter integer C_M_AXI_ADDR_WIDTH = 32,
-    parameter integer C_M_AXI_DATA_WIDTH = 32
+    parameter integer C_M_AXI_DATA_WIDTH = 32,
+    parameter integer C_M_AXI_BURST_LEN = 64
 )(
     input wire clk,
     input wire reset_n,
@@ -68,8 +69,8 @@ module Write_Master # (
     // [2D 수정] 현재 행의 잔여 바이트 계산
     assign dist_to_line_end   = i_img_width - r_line_bytes_done;
     
-    // [2D 수정] 버스트 크기 결정 (최대 64B, 줄 끝, 4KB 경계 중 최소값)
-    assign max_burst_bytes    = (dist_to_line_end > 64) ? 64 : dist_to_line_end;
+    // [2D 수정] 버스트 크기 결정 (최대 64B, 줄 끝, 4KB 경계 중 최소값) 64byte
+    assign max_burst_bytes    = (dist_to_line_end > C_M_AXI_BURST_LEN * 4) ? C_M_AXI_BURST_LEN * 4 : dist_to_line_end;
     assign calc_len_bytes     = (max_burst_bytes > dist_to_boundary) ? dist_to_boundary : max_burst_bytes;
     
     assign current_transfer_bytes = {22'd0, r_burst_len, 2'b00}; 
