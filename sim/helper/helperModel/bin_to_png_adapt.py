@@ -32,4 +32,4 @@ def convert_bin_to_png(bin_filename, png_filename):
 
 
 if __name__ == "__main__":
-    convert_bin_to_png("../input/ball80_result2.bin", "source/result_21x21.png")
+    convert_bin_to_png("../input/ball60_result2.bin", "../output/result_21x21_01.png")

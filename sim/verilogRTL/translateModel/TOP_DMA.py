@@ -2,10 +2,10 @@
 파일명: TOP_DMA.py
 설명: 전체 모듈을 하나로 묶는 최상위 래퍼 (Import 수정 완료)
 """
-from FIFO import FIFO
-# ★ 파일명과 클래스명을 정확하게 매칭했습니다.
-from readMasterVerilog import ReadMaster
-from writeMasterVerilog import WriteMaster
+# 점(.)을 빼고 전체 패키지 경로를 다 적어버립니다.
+from sim.verilogRTL.translateModel.FIFO import FIFO
+from sim.verilogRTL.translateModel.readMasterVerilog import ReadMaster
+from sim.verilogRTL.translateModel.writeMasterVerilog import WriteMaster
 
 
 class TopDMA:
